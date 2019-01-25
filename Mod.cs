@@ -1,4 +1,4 @@
-﻿using StardewModdingAPI;
+using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 
@@ -6,6 +6,9 @@ namespace Spenny
 {
     public class Mod : StardewModdingAPI.Mod
     {
+        private int ticksCount = 0;
+        private int pennyFacingDirection = 0;
+        
         public static Mod instance;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -22,16 +25,23 @@ namespace Spenny
         /// <param name="e">The event arguments.</param>
         private void onUpdateTicked(object sender, UpdateTickedEventArgs e)
         {
-            if (e.IsMultipleOf(8))
-            {
-                NPC penny = Game1.getCharacterFromName("Penny");
-                if (penny == null)
-                    return;
+            NPC penny = Game1.getCharacterFromName("Penny");
+            if (penny == null)
+                return;
 
-                penny.faceDirection((penny.FacingDirection + 1) % 4);
-                if (penny.yJumpOffset == 0)
-                    penny.jump();
+            if (this.ticksCount >= 8)
+            {
+                this.ticksCount = 0;
+                this.pennyFacingDirection = (this.pennyFacingDirection + 1) % 4;
             }
+            else
+            {
+                this.ticksCount++;
+            }
+            
+            penny.faceDirection(this.pennyFacingDirection);
+            if (penny.yJumpOffset == 0)
+                penny.jump();
         }
     }
 }
